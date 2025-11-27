@@ -1,0 +1,49 @@
+SplashScreen As screen:
+    Fill: =RGBA(0, 120, 212, 1)
+    
+    imgLogo As icon:
+        Icon: =Icon.Money
+        Color: =RGBA(255, 255, 255, 1)
+        Height: =120
+        Width: =120
+        X: =(Parent.Width - Self.Width) / 2
+        Y: =Parent.Height / 2 - 100
+    
+    lblAppTitle As label:
+        Text: ="Bank Reconciliation"
+        FontWeight: =FontWeight.Bold
+        Size: =24
+        Color: =RGBA(255, 255, 255, 1)
+        Align: =Align.Center
+        X: =0
+        Y: =imgLogo.Y + imgLogo.Height + 20
+        Width: =Parent.Width
+        Height: =40
+    
+    lblSubtitle As label:
+        Text: ="Automated Transaction Matching"
+        Size: =14
+        Color: =RGBA(255, 255, 255, 0.8)
+        Align: =Align.Center
+        X: =0
+        Y: =lblAppTitle.Y + lblAppTitle.Height + 10
+        Width: =Parent.Width
+        Height: =30
+    
+    lblLoading As label:
+        Text: ="Loading..."
+        Size: =12
+        Color: =RGBA(255, 255, 255, 0.6)
+        Align: =Align.Center
+        X: =0
+        Y: =Parent.Height - 80
+        Width: =Parent.Width
+        Height: =30
+    
+    timerNavigate As timer:
+        Duration: =2000
+        Repeat: =false
+        AutoStart: =true
+        OnTimerEnd: =Navigate(DashboardScreen, ScreenTransition.Fade)
+        Visible: =false
+

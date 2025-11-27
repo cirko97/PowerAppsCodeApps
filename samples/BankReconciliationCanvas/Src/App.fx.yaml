@@ -1,0 +1,262 @@
+App As appinfo:
+    BackEnabled: =false
+    OnStart: |-
+        =// Initialize theme colors
+        Set(ColorBank, RGBA(0, 120, 212, 1));
+        Set(ColorSage, RGBA(139, 92, 246, 1));
+        Set(ColorAI, RGBA(20, 184, 166, 1));
+        Set(ColorSuccess, RGBA(16, 185, 129, 1));
+        Set(ColorDanger, RGBA(239, 68, 68, 1));
+        Set(ColorWarning, RGBA(245, 158, 11, 1));
+        
+        // Initialize current user
+        Set(
+            CurrentUserProfile,
+            {
+                name: "Sarah Johnson",
+                email: "sarah.johnson@company.com",
+                role: "Finance Manager",
+                avatar: "SJ"
+            }
+        );
+        
+        // Initialize navigation
+        Set(CurrentTab, "Dashboard");
+        Set(SelectedTransaction, Blank());
+        Set(ShowReviewModal, false);
+        Set(ShowSettingsModal, false);
+        
+        // Mock Notifications
+        ClearCollect(
+            Notifications,
+            {
+                id: 1,
+                type: "warning",
+                message: "5 transactions need manual review",
+                timestamp: Now() - Time(0, 30, 0),
+                isRead: false
+            },
+            {
+                id: 2,
+                type: "success",
+                message: "Daily reconciliation completed successfully",
+                timestamp: Now() - Time(2, 0, 0),
+                isRead: false
+            },
+            {
+                id: 3,
+                type: "info",
+                message: "New bank statement uploaded",
+                timestamp: Now() - Time(5, 15, 0),
+                isRead: true
+            }
+        );
+        
+        // Mock Matched Transactions
+        ClearCollect(
+            MatchedTransactions,
+            {
+                id: "MT-2024-001",
+                status: "Pending Review",
+                confidence: "High",
+                confidenceScore: 0.95,
+                bankTransaction: {
+                    date: Date(2024, 3, 15),
+                    description: "VENDOR PAYMENT - ACME CORP",
+                    amount: -1250.00,
+                    reference: "BP-2024-0315",
+                    balance: 45230.50
+                },
+                sageTransaction: {
+                    date: Date(2024, 3, 15),
+                    vendor: "ACME Corporation",
+                    invoiceNumber: "INV-2024-0847",
+                    amount: 1250.00,
+                    reference: "SP-0315-001"
+                },
+                notes: "",
+                lastModified: Now() - Time(0, 30, 0)
+            },
+            {
+                id: "MT-2024-002",
+                status: "Accepted",
+                confidence: "High",
+                confidenceScore: 0.98,
+                bankTransaction: {
+                    date: Date(2024, 3, 14),
+                    description: "CUSTOMER PAYMENT - SMITH LLC",
+                    amount: 3500.00,
+                    reference: "BP-2024-0314",
+                    balance: 46480.50
+                },
+                sageTransaction: {
+                    date: Date(2024, 3, 14),
+                    vendor: "Smith LLC",
+                    invoiceNumber: "INV-2024-0835",
+                    amount: 3500.00,
+                    reference: "SR-0314-002"
+                },
+                notes: "Verified with customer",
+                lastModified: Now() - Time(24, 0, 0)
+            },
+            {
+                id: "MT-2024-003",
+                status: "Needs Review",
+                confidence: "Medium",
+                confidenceScore: 0.72,
+                bankTransaction: {
+                    date: Date(2024, 3, 13),
+                    description: "PAYMENT TO SUPPLIER",
+                    amount: -890.50,
+                    reference: "BP-2024-0313",
+                    balance: 42980.50
+                },
+                sageTransaction: {
+                    date: Date(2024, 3, 13),
+                    vendor: "Generic Supplies Ltd",
+                    invoiceNumber: "INV-2024-0820",
+                    amount: 890.50,
+                    reference: "SP-0313-005"
+                },
+                notes: "",
+                lastModified: Now() - Time(48, 0, 0)
+            },
+            {
+                id: "MT-2024-004",
+                status: "Rejected",
+                confidence: "Low",
+                confidenceScore: 0.45,
+                bankTransaction: {
+                    date: Date(2024, 3, 12),
+                    description: "MISC TRANSACTION",
+                    amount: -150.00,
+                    reference: "BP-2024-0312",
+                    balance: 43871.00
+                },
+                sageTransaction: {
+                    date: Date(2024, 3, 10),
+                    vendor: "Unknown Vendor",
+                    invoiceNumber: "INV-2024-0801",
+                    amount: 155.00,
+                    reference: "SP-0312-010"
+                },
+                notes: "Amount and date mismatch - manual investigation required",
+                lastModified: Now() - Time(72, 0, 0)
+            },
+            {
+                id: "MT-2024-005",
+                status: "Pending Review",
+                confidence: "High",
+                confidenceScore: 0.88,
+                bankTransaction: {
+                    date: Date(2024, 3, 11),
+                    description: "SALARY PAYMENT BATCH",
+                    amount: -12500.00,
+                    reference: "BP-2024-0311",
+                    balance: 44021.00
+                },
+                sageTransaction: {
+                    date: Date(2024, 3, 11),
+                    vendor: "Payroll Processing",
+                    invoiceNumber: "PAY-2024-03",
+                    amount: 12500.00,
+                    reference: "SP-0311-PAY"
+                },
+                notes: "",
+                lastModified: Now() - Time(96, 0, 0)
+            }
+        );
+        
+        // Mock Audit Log
+        ClearCollect(
+            AuditLog,
+            {
+                id: 1,
+                timestamp: Now() - Time(0, 15, 0),
+                actor: "Sarah Johnson",
+                actorEmail: "sarah.johnson@company.com",
+                action: "Approved Match",
+                category: "Transaction",
+                severity: "Info",
+                details: "Matched transaction MT-2024-002 approved",
+                transactionId: "MT-2024-002",
+                before: {status: "Pending Review"},
+                after: {status: "Accepted"}
+            },
+            {
+                id: 2,
+                timestamp: Now() - Time(1, 30, 0),
+                actor: "System",
+                actorEmail: "system@company.com",
+                action: "AI Match Created",
+                category: "System",
+                severity: "Info",
+                details: "AI matched 5 new transactions with 92% average confidence",
+                transactionId: "",
+                before: {},
+                after: {}
+            },
+            {
+                id: 3,
+                timestamp: Now() - Time(3, 0, 0),
+                actor: "Sarah Johnson",
+                actorEmail: "sarah.johnson@company.com",
+                action: "Rejected Match",
+                category: "Transaction",
+                severity: "Warning",
+                details: "Match rejected due to amount discrepancy",
+                transactionId: "MT-2024-004",
+                before: {status: "Needs Review"},
+                after: {status: "Rejected"}
+            },
+            {
+                id: 4,
+                timestamp: Now() - Time(24, 0, 0),
+                actor: "John Smith",
+                actorEmail: "john.smith@company.com",
+                action: "Bank Statement Upload",
+                category: "Data",
+                severity: "Info",
+                details: "Uploaded March 2024 bank statement (250 transactions)",
+                transactionId: "",
+                before: {},
+                after: {}
+            },
+            {
+                id: 5,
+                timestamp: Now() - Time(48, 0, 0),
+                actor: "System",
+                actorEmail: "system@company.com",
+                action: "Reconciliation Complete",
+                category: "System",
+                severity: "Info",
+                details: "Daily reconciliation completed - 45 matches processed",
+                transactionId: "",
+                before: {},
+                after: {}
+            }
+        );
+        
+        // Dashboard Stats
+        Set(
+            DashboardStats,
+            {
+                totalTransactions: 1247,
+                matchedTransactions: 1198,
+                pendingReview: 35,
+                exceptions: 14,
+                matchRate: 96.1,
+                avgConfidence: 87.5,
+                totalAmount: 2847392.50,
+                reconciledAmount: 2731450.75
+            }
+        );
+        
+        // Initialize filters
+        Set(FilterStatus, "All");
+        Set(FilterConfidence, "All");
+        Set(FilterSearchText, "");
+        Set(SelectedTransactionIds, []);
+        
+        Navigate(SplashScreen, ScreenTransition.None)
+    

@@ -1,0 +1,37 @@
+# Power Apps Canvas App - Generated Files
+*.msapp
+*.zip
+
+# PAC CLI Cache
+.pac/
+*.cache
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+build/
+dist/
+out/
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.local

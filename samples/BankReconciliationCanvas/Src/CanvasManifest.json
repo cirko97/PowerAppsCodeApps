@@ -1,0 +1,50 @@
+{
+  "FormatVersion": "0.24",
+  "Properties": {
+    "AppCreationSource": "AppFromScratch",
+    "AppDescription": "Bank Reconciliation System POC",
+    "AppName": "Bank Reconciliation",
+    "Author": "",
+    "BackgroundColor": "RGBA(248, 250, 252, 1)",
+    "ContainsThirdPartyPcfControls": false,
+    "DefaultConnectedDataSourceMaxGetRowsCount": 500,
+    "DocumentAppType": "Tablet",
+    "DocumentLayoutHeight": 768,
+    "DocumentLayoutLockOrientation": false,
+    "DocumentLayoutMaintainAspectRatio": true,
+    "DocumentLayoutOrientation": 0,
+    "DocumentLayoutScaleToFit": true,
+    "DocumentLayoutWidth": 1366,
+    "DocumentType": "App",
+    "EnableInstrumentation": false,
+    "FileID": "00000000-0000-0000-0000-000000000000",
+    "Id": "00000000-0000-0000-0000-000000000000",
+    "InstrumentationKey": "",
+    "LocalConnectionReferences": {},
+    "LocalDatabaseReferences": {},
+    "Name": "",
+    "OriginatingVersion": "1.367"
+  },
+  "Header": {
+    "DocVersion": "1.367",
+    "MinVersionToLoad": "1.331"
+  },
+  "PublishInfo": {
+    "AppName": "Bank Reconciliation",
+    "BackgroundColor": "RGBA(248, 250, 252, 1)",
+    "DocumentAppType": "Tablet",
+    "DocumentLayoutHeight": 768,
+    "DocumentLayoutWidth": 1366,
+    "IconColor": "RGBA(0, 120, 212, 1)",
+    "IconName": "Money",
+    "ScreenCount": 5,
+    "UserLocale": "en-US"
+  },
+  "ScreenOrder": [
+    "SplashScreen",
+    "DashboardScreen",
+    "MatchingScreen",
+    "ReconciliationScreen",
+    "AuditTrailScreen"
+  ]
+}

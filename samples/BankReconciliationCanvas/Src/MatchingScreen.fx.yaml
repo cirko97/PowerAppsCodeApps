@@ -1,0 +1,408 @@
+MatchingScreen As screen:
+    Fill: =RGBA(248, 250, 252, 1)
+    OnVisible: =Set(CurrentTab, "Matching")
+    
+    # Header Container (reused pattern)
+    containerHeader As container:
+        Fill: =RGBA(255, 255, 255, 1)
+        Height: =80
+        Width: =Parent.Width
+        X: =0
+        Y: =0
+        
+        lblHeaderTitle As label:
+            Text: ="Transaction Matching"
+            FontWeight: =FontWeight.Bold
+            Size: =18
+            Color: =ColorBank
+            X: =20
+            Y: =20
+            Width: =300
+            Height: =40
+        
+        lblUserName As label:
+            Text: =CurrentUserProfile.name
+            Size: =12
+            Color: =RGBA(100, 116, 139, 1)
+            Align: =Align.Right
+            X: =Parent.Width - 180
+            Y: =25
+            Width: =150
+            Height: =30
+        
+        iconUser As icon:
+            Icon: =Icon.Person
+            Color: =ColorBank
+            Height: =30
+            Width: =30
+            X: =Parent.Width - 20
+            Y: =25
+    
+    # Navigation Tabs (reused pattern)
+    containerNavigation As container:
+        Fill: =RGBA(255, 255, 255, 1)
+        Height: =60
+        Width: =Parent.Width
+        X: =0
+        Y: =containerHeader.Height
+        
+        btnNavDashboard As button:
+            Text: ="Dashboard"
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(100, 116, 139, 1)
+            BorderThickness: =0
+            X: =10
+            Y: =10
+            Width: =150
+            Height: =40
+            OnSelect: =Navigate(DashboardScreen, ScreenTransition.None)
+        
+        btnNavMatching As button:
+            Text: ="Matching"
+            Fill: =RGBA(0, 120, 212, 0.1)
+            Color: =ColorBank
+            BorderColor: =ColorBank
+            BorderThickness: =2
+            X: =btnNavDashboard.X + btnNavDashboard.Width + 5
+            Y: =10
+            Width: =150
+            Height: =40
+        
+        btnNavReconciliation As button:
+            Text: ="Reconciliation"
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(100, 116, 139, 1)
+            BorderThickness: =0
+            X: =btnNavMatching.X + btnNavMatching.Width + 5
+            Y: =10
+            Width: =150
+            Height: =40
+            OnSelect: =Navigate(ReconciliationScreen, ScreenTransition.None)
+        
+        btnNavAudit As button:
+            Text: ="Audit Trail"
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(100, 116, 139, 1)
+            BorderThickness: =0
+            X: =btnNavReconciliation.X + btnNavReconciliation.Width + 5
+            Y: =10
+            Width: =150
+            Height: =40
+            OnSelect: =Navigate(AuditTrailScreen, ScreenTransition.None)
+    
+    # Filter Panel
+    containerFilters As container:
+        Fill: =RGBA(255, 255, 255, 1)
+        Height: =240
+        Width: =Parent.Width - 40
+        X: =20
+        Y: =containerHeader.Height + containerNavigation.Height + 10
+        
+        lblFiltersTitle As label:
+            Text: ="Filters"
+            FontWeight: =FontWeight.Semibold
+            Size: =14
+            Color: =RGBA(30, 41, 59, 1)
+            X: =15
+            Y: =15
+            Width: =200
+            Height: =30
+        
+        lblStatusFilter As label:
+            Text: ="Status"
+            Size: =12
+            Color: =RGBA(100, 116, 139, 1)
+            X: =15
+            Y: =55
+            Width: =100
+            Height: =25
+        
+        ddStatusFilter As dropdown:
+            Items: =["All", "Pending Review", "Needs Review", "Accepted", "Rejected"]
+            Default: ="All"
+            OnChange: =Set(FilterStatus, Self.Selected.Value)
+            X: =15
+            Y: =80
+            Width: =280
+            Height: =40
+        
+        lblConfidenceFilter As label:
+            Text: ="Confidence"
+            Size: =12
+            Color: =RGBA(100, 116, 139, 1)
+            X: =15
+            Y: =130
+            Width: =100
+            Height: =25
+        
+        ddConfidenceFilter As dropdown:
+            Items: =["All", "High", "Medium", "Low"]
+            Default: ="All"
+            OnChange: =Set(FilterConfidence, Self.Selected.Value)
+            X: =15
+            Y: =155
+            Width: =280
+            Height: =40
+        
+        txtSearchFilter As text input:
+            HintText: ="Search transactions..."
+            OnChange: =Set(FilterSearchText, Self.Text)
+            X: =315
+            Y: =80
+            Width: =280
+            Height: =40
+        
+        btnClearFilters As button:
+            Text: ="Clear Filters"
+            Fill: =RGBA(248, 250, 252, 1)
+            Color: =RGBA(100, 116, 139, 1)
+            BorderColor: =RGBA(226, 232, 240, 1)
+            BorderThickness: =1
+            OnSelect: =Set(FilterStatus, "All"); Set(FilterConfidence, "All"); Set(FilterSearchText, ""); Reset(ddStatusFilter); Reset(ddConfidenceFilter); Reset(txtSearchFilter)
+            X: =315
+            Y: =155
+            Width: =140
+            Height: =40
+        
+        lblResultCount As label:
+            Text: =CountRows(galTransactions.AllItems) & " transactions"
+            Size: =12
+            Color: =RGBA(100, 116, 139, 1)
+            X: =Parent.Width - 150
+            Y: =15
+            Width: =130
+            Height: =30
+            Align: =Align.Right
+    
+    # Batch Actions Toolbar (only visible when items selected)
+    containerBatchActions As container:
+        Fill: =RGBA(0, 120, 212, 0.9)
+        Height: =60
+        Width: =Parent.Width - 40
+        X: =20
+        Y: =containerFilters.Y + containerFilters.Height + 10
+        Visible: =CountRows(SelectedTransactionIds) > 0
+        
+        lblBatchCount As label:
+            Text: =CountRows(SelectedTransactionIds) & " selected"
+            FontWeight: =FontWeight.Semibold
+            Size: =14
+            Color: =RGBA(255, 255, 255, 1)
+            X: =15
+            Y: =15
+            Width: =150
+            Height: =30
+        
+        btnBatchApprove As button:
+            Text: ="Approve"
+            Fill: =ColorSuccess
+            Color: =RGBA(255, 255, 255, 1)
+            BorderThickness: =0
+            OnSelect: |
+                =ForAll(
+                    SelectedTransactionIds,
+                    Patch(
+                        MatchedTransactions,
+                        LookUp(MatchedTransactions, id = Value),
+                        {status: "Accepted"}
+                    )
+                );
+                Clear(SelectedTransactionIds);
+                Notify("Transactions approved successfully", NotificationType.Success)
+            X: =200
+            Y: =10
+            Width: =120
+            Height: =40
+        
+        btnBatchReject As button:
+            Text: ="Reject"
+            Fill: =ColorDanger
+            Color: =RGBA(255, 255, 255, 1)
+            BorderThickness: =0
+            OnSelect: |
+                =ForAll(
+                    SelectedTransactionIds,
+                    Patch(
+                        MatchedTransactions,
+                        LookUp(MatchedTransactions, id = Value),
+                        {status: "Rejected"}
+                    )
+                );
+                Clear(SelectedTransactionIds);
+                Notify("Transactions rejected", NotificationType.Warning)
+            X: =330
+            Y: =10
+            Width: =120
+            Height: =40
+        
+        btnClearSelection As button:
+            Text: ="Clear"
+            Fill: =RGBA(255, 255, 255, 0.2)
+            Color: =RGBA(255, 255, 255, 1)
+            BorderColor: =RGBA(255, 255, 255, 1)
+            BorderThickness: =1
+            OnSelect: =Clear(SelectedTransactionIds)
+            X: =460
+            Y: =10
+            Width: =100
+            Height: =40
+    
+    # Transaction List Gallery
+    galTransactions As gallery:
+        Items: |
+            =Filter(
+                MatchedTransactions,
+                (FilterStatus = "All" Or status = FilterStatus) And
+                (FilterConfidence = "All" Or confidence = FilterConfidence) And
+                (IsBlank(FilterSearchText) Or 
+                    FilterSearchText in id Or 
+                    FilterSearchText in bankTransaction.description Or
+                    FilterSearchText in sageTransaction.vendor
+                )
+            )
+        Layout: =Layout.Vertical
+        TemplatePadding: =0
+        TemplateSize: =180
+        Height: =Parent.Height - containerFilters.Y - containerFilters.Height - 90
+        Width: =Parent.Width - 40
+        X: =20
+        Y: =If(CountRows(SelectedTransactionIds) > 0, containerBatchActions.Y + containerBatchActions.Height + 10, containerFilters.Y + containerFilters.Height + 10)
+        
+        containerTransactionItem As container:
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =170
+            Width: =Parent.TemplateWidth - 10
+            OnSelect: =Set(SelectedTransaction, ThisItem); Set(ShowReviewModal, true)
+            
+            # Selection Checkbox
+            chkSelect As checkbox:
+                Default: =!IsBlank(LookUp(SelectedTransactionIds, Value = ThisItem.id))
+                OnCheck: '=Collect(SelectedTransactionIds, {Value: ThisItem.id})'
+                OnUncheck: =Remove(SelectedTransactionIds, LookUp(SelectedTransactionIds, Value = ThisItem.id))
+                X: =10
+                Y: =10
+                Width: =30
+                Height: =30
+            
+            # Transaction ID and Status
+            lblTransactionId As label:
+                Text: =ThisItem.id
+                FontWeight: =FontWeight.Semibold
+                Size: =13
+                Color: =RGBA(30, 41, 59, 1)
+                X: =50
+                Y: =10
+                Width: =200
+                Height: =30
+            
+            lblStatus As label:
+                Text: =ThisItem.status
+                Size: =11
+                Color: =RGBA(255, 255, 255, 1)
+                Fill: =Switch(ThisItem.status, "Accepted", ColorSuccess, "Rejected", ColorDanger, "Needs Review", ColorWarning, ColorBank)
+                Align: =Align.Center
+                PaddingLeft: =8
+                PaddingRight: =8
+                PaddingTop: =4
+                PaddingBottom: =4
+                X: =Parent.Width - 150
+                Y: =10
+                Width: =140
+                Height: =30
+            
+            # Confidence Badge
+            lblConfidence As label:
+                Text: =ThisItem.confidence & " (" & Text(ThisItem.confidenceScore * 100, "##0") & "%)"
+                Size: =11
+                Color: =RGBA(255, 255, 255, 1)
+                Fill: =Switch(ThisItem.confidence, "High", ColorAI, "Medium", ColorWarning, RGBA(148, 163, 184, 1))
+                Align: =Align.Center
+                PaddingLeft: =8
+                PaddingRight: =8
+                PaddingTop: =4
+                PaddingBottom: =4
+                X: =Parent.Width - 150
+                Y: =45
+                Width: =140
+                Height: =25
+            
+            # Bank Transaction (Blue)
+            lblBankLabel As label:
+                Text: ="Bank Transaction"
+                FontWeight: =FontWeight.Semibold
+                Size: =11
+                Color: =ColorBank
+                X: =50
+                Y: =50
+                Width: =180
+                Height: =20
+            
+            lblBankDate As label:
+                Text: =Text(ThisItem.bankTransaction.date, "mmm dd, yyyy")
+                Size: =10
+                Color: =RGBA(100, 116, 139, 1)
+                X: =50
+                Y: =72
+                Width: =100
+                Height: =18
+            
+            lblBankDescription As label:
+                Text: =ThisItem.bankTransaction.description
+                Size: =11
+                Color: =RGBA(30, 41, 59, 1)
+                X: =50
+                Y: =92
+                Width: =Parent.Width - 240
+                Height: =18
+            
+            lblBankAmount As label:
+                Text: =Text(ThisItem.bankTransaction.amount, "[$-en-US]$ #,##0.00")
+                FontWeight: =FontWeight.Semibold
+                Size: =12
+                Color: =If(ThisItem.bankTransaction.amount < 0, ColorDanger, ColorSuccess)
+                Align: =Align.Right
+                X: =Parent.Width - 180
+                Y: =75
+                Width: =100
+                Height: =20
+            
+            # Sage Transaction (Purple)
+            lblSageLabel As label:
+                Text: ="Sage Transaction"
+                FontWeight: =FontWeight.Semibold
+                Size: =11
+                Color: =ColorSage
+                X: =50
+                Y: =115
+                Width: =180
+                Height: =20
+            
+            lblSageVendor As label:
+                Text: =ThisItem.sageTransaction.vendor
+                Size: =11
+                Color: =RGBA(30, 41, 59, 1)
+                X: =50
+                Y: =137
+                Width: =Parent.Width - 240
+                Height: =18
+            
+            lblSageInvoice As label:
+                Text: =ThisItem.sageTransaction.invoiceNumber
+                Size: =10
+                Color: =RGBA(100, 116, 139, 1)
+                X: =50
+                Y: =155
+                Width: =120
+                Height: =18
+            
+            lblSageAmount As label:
+                Text: =Text(ThisItem.sageTransaction.amount, "[$-en-US]$ #,##0.00")
+                FontWeight: =FontWeight.Semibold
+                Size: =12
+                Color: =ColorSage
+                Align: =Align.Right
+                X: =Parent.Width - 180
+                Y: =137
+                Width: =100
+                Height: =20
+

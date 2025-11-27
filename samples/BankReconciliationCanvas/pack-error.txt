@@ -1,0 +1,4 @@
+'pac canvas unpack' and 'pac canvas pack' are deprecated, and will be removed in a future release.
+Pack from C:\Users\Cirko\Desktop\Repositories\OperationSmileNS\PowerAppsCodeApps\samples\BankReconciliationCanvas\Src --> C:\Users\Cirko\Desktop\Repositories\OperationSmileNS\PowerAppsCodeApps\samples\BankReconciliationCanvas\BankReconciliation.msapp
+Sorry, the app encountered a non-recoverable error and will need to terminate. The exception details have been captured and will be forwarded to the development team, if telemetry has been enabled. Session Id: a41482fa-6de4-4d90-8b55-c648d653a027, Exception Type: System.Text.Json.JsonException
+The diagnostic logs can be found at: c:\Users\Cirko\AppData\Roaming\Code\User\globalStorage\microsoft-isvexptools.powerplatform-vscode\pac\tools\logs\pac-log.txt

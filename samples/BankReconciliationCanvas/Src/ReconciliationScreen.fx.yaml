@@ -1,0 +1,311 @@
+ReconciliationScreen As screen:
+    Fill: =RGBA(248, 250, 252, 1)
+    OnVisible: =Set(CurrentTab, "Reconciliation")
+    
+    # Header Container
+    containerHeader As container:
+        Fill: =RGBA(255, 255, 255, 1)
+        Height: =80
+        Width: =Parent.Width
+        X: =0
+        Y: =0
+        
+        lblHeaderTitle As label:
+            Text: ="Reconciliation"
+            FontWeight: =FontWeight.Bold
+            Size: =18
+            Color: =ColorBank
+            X: =20
+            Y: =20
+            Width: =300
+            Height: =40
+        
+        lblUserName As label:
+            Text: =CurrentUserProfile.name
+            Size: =12
+            Color: =RGBA(100, 116, 139, 1)
+            Align: =Align.Right
+            X: =Parent.Width - 180
+            Y: =25
+            Width: =150
+            Height: =30
+        
+        iconUser As icon:
+            Icon: =Icon.Person
+            Color: =ColorBank
+            Height: =30
+            Width: =30
+            X: =Parent.Width - 20
+            Y: =25
+    
+    # Navigation Tabs
+    containerNavigation As container:
+        Fill: =RGBA(255, 255, 255, 1)
+        Height: =60
+        Width: =Parent.Width
+        X: =0
+        Y: =containerHeader.Height
+        
+        btnNavDashboard As button:
+            Text: ="Dashboard"
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(100, 116, 139, 1)
+            BorderThickness: =0
+            X: =10
+            Y: =10
+            Width: =150
+            Height: =40
+            OnSelect: =Navigate(DashboardScreen, ScreenTransition.None)
+        
+        btnNavMatching As button:
+            Text: ="Matching"
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(100, 116, 139, 1)
+            BorderThickness: =0
+            X: =btnNavDashboard.X + btnNavDashboard.Width + 5
+            Y: =10
+            Width: =150
+            Height: =40
+            OnSelect: =Navigate(MatchingScreen, ScreenTransition.None)
+        
+        btnNavReconciliation As button:
+            Text: ="Reconciliation"
+            Fill: =RGBA(0, 120, 212, 0.1)
+            Color: =ColorBank
+            BorderColor: =ColorBank
+            BorderThickness: =2
+            X: =btnNavMatching.X + btnNavMatching.Width + 5
+            Y: =10
+            Width: =150
+            Height: =40
+        
+        btnNavAudit As button:
+            Text: ="Audit Trail"
+            Fill: =RGBA(255, 255, 255, 1)
+            Color: =RGBA(100, 116, 139, 1)
+            BorderThickness: =0
+            X: =btnNavReconciliation.X + btnNavReconciliation.Width + 5
+            Y: =10
+            Width: =150
+            Height: =40
+            OnSelect: =Navigate(AuditTrailScreen, ScreenTransition.None)
+    
+    # Summary Cards
+    containerSummary As container:
+        Fill: =RGBA(255, 255, 255, 1)
+        Height: =180
+        Width: =Parent.Width - 40
+        X: =20
+        Y: =containerHeader.Height + containerNavigation.Height + 10
+        
+        lblSummaryTitle As label:
+            Text: ="Reconciliation Summary"
+            FontWeight: =FontWeight.Semibold
+            Size: =16
+            Color: =RGBA(30, 41, 59, 1)
+            X: =15
+            Y: =15
+            Width: =Parent.Width - 30
+            Height: =30
+        
+        lblAcceptedCount As label:
+            Text: ="Accepted Transactions"
+            Size: =12
+            Color: =RGBA(100, 116, 139, 1)
+            X: =15
+            Y: =60
+            Width: =(Parent.Width - 45) / 2
+            Height: =25
+        
+        lblAcceptedCountValue As label:
+            Text: =CountRows(Filter(MatchedTransactions, status = "Accepted"))
+            FontWeight: =FontWeight.Bold
+            Size: =32
+            Color: =ColorSuccess
+            X: =15
+            Y: =85
+            Width: =(Parent.Width - 45) / 2
+            Height: =50
+        
+        lblTotalReconAmount As label:
+            Text: ="Total Amount to Reconcile"
+            Size: =12
+            Color: =RGBA(100, 116, 139, 1)
+            X: =15 + (Parent.Width - 45) / 2 + 15
+            Y: =60
+            Width: =(Parent.Width - 45) / 2
+            Height: =25
+        
+        lblTotalReconAmountValue As label:
+            Text: =Text(Sum(Filter(MatchedTransactions, status = "Accepted"), Abs(bankTransaction.amount)), "[$-en-US]$ #,##0.00")
+            FontWeight: =FontWeight.Bold
+            Size: =24
+            Color: =RGBA(30, 41, 59, 1)
+            X: =15 + (Parent.Width - 45) / 2 + 15
+            Y: =85
+            Width: =(Parent.Width - 45) / 2
+            Height: =50
+        
+        btnBatchReconcile As button:
+            Text: ="Batch Reconcile All"
+            Fill: =ColorBank
+            Color: =RGBA(255, 255, 255, 1)
+            FontWeight: =FontWeight.Semibold
+            BorderThickness: =0
+            OnSelect: |
+                =ForAll(
+                    Filter(MatchedTransactions, status = "Accepted"),
+                    Patch(
+                        MatchedTransactions,
+                        ThisRecord,
+                        {status: "Reconciled"}
+                    )
+                );
+                Notify(
+                    CountRows(Filter(MatchedTransactions, status = "Accepted")) & " transactions reconciled successfully",
+                    NotificationType.Success
+                )
+            X: =15
+            Y: =140
+            Width: =250
+            Height: =45
+            DisplayMode: =If(CountRows(Filter(MatchedTransactions, status = "Accepted")) > 0, DisplayMode.Edit, DisplayMode.Disabled)
+    
+    # Accepted Transactions Gallery
+    lblAcceptedTitle As label:
+        Text: ="Accepted Transactions Ready for Reconciliation"
+        FontWeight: =FontWeight.Semibold
+        Size: =14
+        Color: =RGBA(30, 41, 59, 1)
+        X: =35
+        Y: =containerSummary.Y + containerSummary.Height + 20
+        Width: =Parent.Width - 70
+        Height: =30
+    
+    galAcceptedTransactions As gallery:
+        Items: =Filter(MatchedTransactions, status = "Accepted")
+        Layout: =Layout.Vertical
+        TemplatePadding: =0
+        TemplateSize: =140
+        Height: =Parent.Height - lblAcceptedTitle.Y - lblAcceptedTitle.Height - 70
+        Width: =Parent.Width - 40
+        X: =20
+        Y: =lblAcceptedTitle.Y + lblAcceptedTitle.Height + 10
+        
+        containerAcceptedItem As container:
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =130
+            Width: =Parent.TemplateWidth - 10
+            
+            iconCheckmark As icon:
+                Icon: =Icon.CheckBadge
+                Color: =ColorSuccess
+                Height: =30
+                Width: =30
+                X: =10
+                Y: =10
+            
+            lblItemId As label:
+                Text: =ThisItem.id
+                FontWeight: =FontWeight.Semibold
+                Size: =13
+                Color: =RGBA(30, 41, 59, 1)
+                X: =50
+                Y: =10
+                Width: =200
+                Height: =30
+            
+            lblItemConfidence As label:
+                Text: =ThisItem.confidence & " Confidence"
+                Size: =11
+                Color: =ColorAI
+                X: =Parent.Width - 150
+                Y: =15
+                Width: =140
+                Height: =20
+            
+            lblItemBankDesc As label:
+                Text: '="Bank: " & ThisItem.bankTransaction.description'
+                Size: =11
+                Color: =RGBA(30, 41, 59, 1)
+                X: =50
+                Y: =50
+                Width: =Parent.Width - 230
+                Height: =20
+            
+            lblItemBankAmount As label:
+                Text: =Text(ThisItem.bankTransaction.amount, "[$-en-US]$ #,##0.00")
+                FontWeight: =FontWeight.Semibold
+                Size: =12
+                Color: =If(ThisItem.bankTransaction.amount < 0, ColorDanger, ColorSuccess)
+                Align: =Align.Right
+                X: =Parent.Width - 160
+                Y: =48
+                Width: =100
+                Height: =22
+            
+            lblItemSageVendor As label:
+                Text: '="Sage: " & ThisItem.sageTransaction.vendor'
+                Size: =11
+                Color: =RGBA(30, 41, 59, 1)
+                X: =50
+                Y: =75
+                Width: =Parent.Width - 230
+                Height: =20
+            
+            lblItemSageInvoice As label:
+                Text: =ThisItem.sageTransaction.invoiceNumber
+                Size: =10
+                Color: =RGBA(100, 116, 139, 1)
+                X: =50
+                Y: =100
+                Width: =150
+                Height: =18
+            
+            lblItemDate As label:
+                Text: =Text(ThisItem.bankTransaction.date, "mmm dd, yyyy")
+                Size: =10
+                Color: =RGBA(100, 116, 139, 1)
+                Align: =Align.Right
+                X: =Parent.Width - 160
+                Y: =100
+                Width: =150
+                Height: =18
+    
+    # Empty State
+    containerEmptyState As container:
+        Fill: =RGBA(255, 255, 255, 1)
+        Height: =200
+        Width: =Parent.Width - 40
+        X: =20
+        Y: =lblAcceptedTitle.Y + lblAcceptedTitle.Height + 10
+        Visible: =CountRows(Filter(MatchedTransactions, status = "Accepted")) = 0
+        
+        iconEmpty As icon:
+            Icon: =Icon.CheckboxComposite
+            Color: =RGBA(203, 213, 225, 1)
+            Height: =60
+            Width: =60
+            X: =(Parent.Width - 60) / 2
+            Y: =40
+        
+        lblEmptyMessage As label:
+            Text: ="No accepted transactions ready for reconciliation"
+            Size: =14
+            Color: =RGBA(100, 116, 139, 1)
+            Align: =Align.Center
+            X: =0
+            Y: =110
+            Width: =Parent.Width
+            Height: =30
+        
+        lblEmptyHint As label:
+            Text: ="Go to Matching tab to approve transactions"
+            Size: =12
+            Color: =RGBA(148, 163, 184, 1)
+            Align: =Align.Center
+            X: =0
+            Y: =145
+            Width: =Parent.Width
+            Height: =25
+
